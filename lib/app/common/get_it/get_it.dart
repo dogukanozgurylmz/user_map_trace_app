@@ -4,6 +4,10 @@ import 'package:user_map_trace_app/app/features/data/datasources/local/test_loca
 import 'package:user_map_trace_app/app/features/data/datasources/remote/test_remote_datasource.dart';
 import 'package:user_map_trace_app/app/features/data/repositories/test_repository.dart';
 import 'package:user_map_trace_app/app/features/presentation/test/cubit/test_cubit.dart';
+import 'package:user_map_trace_app/app/common/infrastructure/location/i_location_service.dart';
+import 'package:user_map_trace_app/app/common/infrastructure/location/location_service.dart';
+import 'package:user_map_trace_app/app/common/infrastructure/permissions/i_permissions_service.dart';
+import 'package:user_map_trace_app/app/common/infrastructure/permissions/permissions_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -11,10 +15,22 @@ final getIt = GetIt.instance;
 final class ServiceLocator {
   /// **Main method to call to set up dependencies**
   void setup() {
+    _setupServices();
     _setupRouter();
     _setupDataSource();
     _setupRepository();
     _setupCubit();
+  }
+
+  /// **Core Services Dependency**
+  void _setupServices() {
+    getIt.registerLazySingleton<IPermissionsService>(
+      () => PermissionsService.instance,
+    );
+
+    getIt.registerLazySingleton<ILocationService>(
+      () => LocationService.instance,
+    );
   }
 
   /// **Router Dependency**
