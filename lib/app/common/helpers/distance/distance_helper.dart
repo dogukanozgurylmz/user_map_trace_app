@@ -23,8 +23,8 @@ final class DistanceHelper {
   }
 
   double calculateDistanceBetweenPositions({
-    required Position position1,
-    required Position position2,
+    required LatLng position1,
+    required LatLng position2,
   }) {
     return calculateDistance(
       latitude1: position1.latitude,

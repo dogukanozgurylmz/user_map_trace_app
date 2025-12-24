@@ -11,6 +11,22 @@
 part of 'app_router.dart';
 
 /// generated route for
+/// [HomeView]
+class HomeRoute extends PageRouteInfo<void> {
+  const HomeRoute({List<PageRouteInfo>? children})
+    : super(HomeRoute.name, initialChildren: children);
+
+  static const String name = 'HomeRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const HomeView();
+    },
+  );
+}
+
+/// generated route for
 /// [SplashView]
 class SplashRoute extends PageRouteInfo<void> {
   const SplashRoute({List<PageRouteInfo>? children})
@@ -22,22 +38,6 @@ class SplashRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const SplashView();
-    },
-  );
-}
-
-/// generated route for
-/// [TestView]
-class TestRoute extends PageRouteInfo<void> {
-  const TestRoute({List<PageRouteInfo>? children})
-    : super(TestRoute.name, initialChildren: children);
-
-  static const String name = 'TestRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const TestView();
     },
   );
 }

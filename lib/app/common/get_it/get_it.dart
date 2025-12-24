@@ -1,13 +1,14 @@
 import 'package:get_it/get_it.dart';
 import 'package:user_map_trace_app/app/common/router/app_router.dart';
-import 'package:user_map_trace_app/app/features/data/datasources/local/test_local_datasource.dart';
-import 'package:user_map_trace_app/app/features/data/datasources/remote/test_remote_datasource.dart';
-import 'package:user_map_trace_app/app/features/data/repositories/test_repository.dart';
-import 'package:user_map_trace_app/app/features/presentation/test/cubit/test_cubit.dart';
+import 'package:user_map_trace_app/app/features/data/datasources/local/location_local_datasource.dart';
 import 'package:user_map_trace_app/app/common/infrastructure/location/i_location_service.dart';
 import 'package:user_map_trace_app/app/common/infrastructure/location/location_service.dart';
 import 'package:user_map_trace_app/app/common/infrastructure/permissions/i_permissions_service.dart';
 import 'package:user_map_trace_app/app/common/infrastructure/permissions/permissions_service.dart';
+import 'package:user_map_trace_app/app/common/infrastructure/routing/i_routing_service.dart';
+import 'package:user_map_trace_app/app/common/infrastructure/routing/routing_service.dart';
+import 'package:user_map_trace_app/app/features/data/repositories/location_repository.dart';
+import 'package:user_map_trace_app/app/features/presentation/home/cubit/home_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -24,13 +25,10 @@ final class ServiceLocator {
 
   /// **Core Services Dependency**
   void _setupServices() {
-    getIt.registerLazySingleton<IPermissionsService>(
-      () => PermissionsService.instance,
-    );
-
-    getIt.registerLazySingleton<ILocationService>(
-      () => LocationService.instance,
-    );
+    getIt
+      ..registerLazySingleton<IPermissionsService>(PermissionsService.new)
+      ..registerLazySingleton<ILocationService>(LocationService.new)
+      ..registerLazySingleton<IRoutingService>(RoutingService.new);
   }
 
   /// **Router Dependency**
@@ -40,27 +38,27 @@ final class ServiceLocator {
 
   /// **DataSource Dependency**
   void _setupDataSource() {
-    getIt
-      ..registerLazySingleton<TestLocalDatasource>(TestLocalDatasourceImpl.new)
-      ..registerLazySingleton<TestRemoteDatasource>(
-        TestRemoteDatasourceImpl.new,
-      );
+    getIt.registerFactory<LocationLocalDatasource>(
+      () => LocationLocalDatasourceImpl(),
+    );
   }
 
   /// **Repository Dependency**
   void _setupRepository() {
-    getIt.registerLazySingleton<TestRepository>(
-      () => TestRepositoryImpl(
-        remoteDatasource: getIt(),
-        localDatasource: getIt(),
-      ),
+    getIt.registerLazySingleton<LocationRepository>(
+      () => LocationRepositoryImpl(locationLocalDatasource: getIt()),
     );
   }
 
   /// **BLoC, Cubit and ViewModel Dependency**
   void _setupCubit() {
-    getIt.registerLazySingleton<TestCubit>(
-      () => TestCubit(testRepository: getIt()),
+    getIt.registerLazySingleton<HomeCubit>(
+      () => HomeCubit(
+        locationRepository: getIt(),
+        locationService: getIt(),
+        permissionsService: getIt(),
+        routingService: getIt(),
+      ),
     );
   }
 

@@ -30,6 +30,11 @@
 	<string>Bu uygulama arka planda konum bilgilerinize erişmek için izin gerektirir.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Bu uygulama konum bilgilerinize erişmek için izin gerektirir.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

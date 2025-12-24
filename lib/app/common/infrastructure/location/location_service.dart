@@ -3,9 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'i_location_service.dart';
 
 final class LocationService implements ILocationService {
-  LocationService._();
-
-  static final LocationService instance = LocationService._();
+  const LocationService();
 
   @override
   Future<bool> isLocationServiceEnabled() async {
