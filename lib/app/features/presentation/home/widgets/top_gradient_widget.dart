@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
 
 class TopGradientWidget extends StatelessWidget {
   const TopGradientWidget({super.key});
@@ -10,7 +11,10 @@ class TopGradientWidget extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.black.withValues(alpha: 0.4), Colors.transparent],
+          colors: [
+            AppColors.black2.withValues(alpha: 0.4),
+            AppColors.black2.withValues(alpha: 0),
+          ],
         ),
       ),
     );

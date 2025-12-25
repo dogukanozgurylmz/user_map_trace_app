@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
 
 class LocationDetailRowWidget extends StatelessWidget {
   final IconData icon;
@@ -19,7 +20,7 @@ class LocationDetailRowWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: AppColors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -39,9 +40,9 @@ class LocationDetailRowWidget extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: AppColors.grey,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

@@ -33,6 +33,7 @@ dependencies:
     git:
       url: https://github.com/dogukanozgurylmz/orange-sdk
       ref: main
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

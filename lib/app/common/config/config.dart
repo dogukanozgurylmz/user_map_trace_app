@@ -6,18 +6,9 @@ final class Config {
   static String get apiBaseUrl {
     switch (currentEnvironment) {
       case Environment.production:
-        return 'https://api.mygen.co';
+        return 'http://router.project-osrm.org';
       case Environment.development:
-        return 'https://api.mygen.co';
-    }
-  }
-
-  static String get apiBaseUrl2 {
-    switch (currentEnvironment) {
-      case Environment.production:
-        return 'https://test-engine-stg.funooka.com';
-      case Environment.development:
-        return 'https://test-engine-stg.funooka.com';
+        return 'http://router.project-osrm.org';
     }
   }
 

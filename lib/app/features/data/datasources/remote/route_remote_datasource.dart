@@ -1,15 +1,24 @@
-import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:user_map_trace_app/app/common/infrastructure/routing/i_routing_service.dart';
+import 'package:user_map_trace_app/app/common/config/config.dart';
+import 'package:user_map_trace_app/core/dio_manager/api_error_model.dart';
+import 'package:user_map_trace_app/core/dio_manager/api_response_model.dart';
+import 'package:user_map_trace_app/core/dio_manager/dio_manager.dart';
 import 'package:user_map_trace_app/core/logger/app_logger.dart';
 
-final class RoutingService implements IRoutingService {
-  RoutingService() : _dio = Dio();
+abstract class RouteRemoteDatasource {
+  Future<ApiResponseModel<List<LatLng>>> getRouteBetweenPoints(
+    LatLng start,
+    LatLng end,
+  );
+  Future<ApiResponseModel<double>> getRouteDistance(LatLng start, LatLng end);
+}
 
-  final Dio _dio;
-  // OSRM public server - ücretsiz ve API key gerektirmiyor
-  static const String _baseUrl = 'http://router.project-osrm.org';
+class RouteRemoteDatasourceImpl implements RouteRemoteDatasource {
+  RouteRemoteDatasourceImpl()
+    : _dioManager = DioApiManager(baseUrl: Config.apiBaseUrl);
+
+  final DioApiManager _dioManager;
   // Profile: driving, cycling, walking
   static const String _profile = 'walking';
 
@@ -18,7 +27,10 @@ final class RoutingService implements IRoutingService {
   static const double _cachePrecision = 0.0001; // ~11 metre hassasiyet
 
   @override
-  Future<List<LatLng>?> getRouteBetweenPoints(LatLng start, LatLng end) async {
+  Future<ApiResponseModel<List<LatLng>>> getRouteBetweenPoints(
+    LatLng start,
+    LatLng end,
+  ) async {
     try {
       // Cache key oluştur (yuvarlanmış koordinatlar)
       final cacheKey = _getCacheKey(start, end);
@@ -26,26 +38,22 @@ final class RoutingService implements IRoutingService {
       // Cache'de varsa direkt döndür
       if (_routeCache.containsKey(cacheKey)) {
         AppLogger.instance.log('Routing cache hit: $cacheKey');
-        return _routeCache[cacheKey];
+        return ApiResponseModel.success(_routeCache[cacheKey]!);
       }
 
       // OSRM API format: {longitude},{latitude};{longitude},{latitude}
       final coordinates =
           '${start.longitude},${start.latitude};${end.longitude},${end.latitude}';
 
-      final response = await _dio.get(
-        '$_baseUrl/route/v1/$_profile/$coordinates',
-        queryParameters: {
-          'geometries':
-              'geojson', // GeoJSON format kullanarak direkt koordinatları al
-          'overview': 'full', // Tüm detaylı geometriyi al
-        },
+      final response = await _dioManager.get<Map<String, dynamic>>(
+        '/route/v1/$_profile/$coordinates',
+        queryParams: {'geometries': 'geojson', 'overview': 'full'},
       );
 
-      if (response.statusCode == 200 && response.data != null) {
-        final code = response.data['code'] as String?;
+      if (response.isSuccess && response.data != null) {
+        final code = response.data!['code'] as String?;
         if (code == 'Ok') {
-          final routes = response.data['routes'] as List?;
+          final routes = response.data!['routes'] as List?;
           if (routes != null && routes.isNotEmpty) {
             final route = routes[0] as Map<String, dynamic>;
             final geometry = route['geometry'] as Map<String, dynamic>?;
@@ -67,25 +75,29 @@ final class RoutingService implements IRoutingService {
                   _routeCache.remove(firstKey);
                 }
 
-                return routePoints;
+                return ApiResponseModel.success(routePoints);
               }
             }
           }
         } else {
           AppLogger.instance.error(
-            'OSRM routing hatası: ${response.data['message'] ?? code}',
+            'OSRM routing hatası: ${response.data!['message'] ?? code}',
           );
         }
       }
-      return null;
+
+      return ApiResponseModel.error(
+        response.error ?? ApiErrorModel(message: 'Route bulunamadı'),
+      );
     } catch (e) {
       AppLogger.instance.error('Routing hatası: $e');
-      return null;
+      return ApiResponseModel.error(
+        ApiErrorModel(message: 'Routing hatası: $e'),
+      );
     }
   }
 
   String _getCacheKey(LatLng start, LatLng end) {
-    // Koordinatları yuvarla ve cache key oluştur
     final startLat =
         (start.latitude / _cachePrecision).round() * _cachePrecision;
     final startLng =
@@ -97,45 +109,54 @@ final class RoutingService implements IRoutingService {
   }
 
   @override
-  Future<double?> getRouteDistance(LatLng start, LatLng end) async {
+  Future<ApiResponseModel<double>> getRouteDistance(
+    LatLng start,
+    LatLng end,
+  ) async {
     try {
       // Önce cache'de var mı kontrol et
       final cacheKey = _getCacheKey(start, end);
       if (_routeCache.containsKey(cacheKey)) {
         // Cache'deki rotanın uzunluğunu hesapla
         final route = _routeCache[cacheKey]!;
-        return _calculateRouteDistance(route);
+        final distance = _calculateRouteDistance(route);
+        return ApiResponseModel.success(distance);
       }
 
       // OSRM API format: {longitude},{latitude};{longitude},{latitude}
       final coordinates =
           '${start.longitude},${start.latitude};${end.longitude},${end.latitude}';
 
-      final response = await _dio.get(
-        '$_baseUrl/route/v1/$_profile/$coordinates',
-        queryParameters: {
+      final response = await _dioManager.get<Map<String, dynamic>>(
+        '/route/v1/$_profile/$coordinates',
+        queryParams: {
           'geometries': 'geojson',
           'overview': 'simplified', // Sadece uzunluk için simplified yeterli
         },
       );
 
-      if (response.statusCode == 200 && response.data != null) {
-        final code = response.data['code'] as String?;
+      if (response.isSuccess && response.data != null) {
+        final code = response.data!['code'] as String?;
         if (code == 'Ok') {
-          final routes = response.data['routes'] as List?;
+          final routes = response.data!['routes'] as List?;
           if (routes != null && routes.isNotEmpty) {
             final route = routes[0] as Map<String, dynamic>;
             final distance = route['distance'] as num?;
             if (distance != null) {
-              return distance.toDouble();
+              return ApiResponseModel.success(distance.toDouble());
             }
           }
         }
       }
-      return null;
+
+      return ApiResponseModel.error(
+        response.error ?? ApiErrorModel(message: 'Route distance bulunamadı'),
+      );
     } catch (e) {
       AppLogger.instance.error('Route distance hatası: $e');
-      return null;
+      return ApiResponseModel.error(
+        ApiErrorModel(message: 'Route distance hatası: $e'),
+      );
     }
   }
 

@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:user_map_trace_app/core/dio_manager/api_error_model.dart';
 import 'package:user_map_trace_app/core/dio_manager/api_response_model.dart';
-import 'package:user_map_trace_app/core/dio_manager/interceptors/auth_interceptor.dart';
 import 'package:user_map_trace_app/core/dio_manager/interceptors/error_logging_interceptor.dart';
 import 'package:user_map_trace_app/core/dio_manager/interceptors/retry_interceptor.dart';
 
@@ -19,9 +18,8 @@ class DioApiManager {
         responseHeader: true,
         requestHeader: true,
       ),
-      if (token != null) AuthInterceptor(token: token), // Token management
-      RetryInterceptor(dio: _dio), // Auth retry management
-      ErrorLoggingInterceptor(), // Error logging
+      RetryInterceptor(dio: _dio),
+      ErrorLoggingInterceptor(),
     ]);
   }
 

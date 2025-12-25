@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/cubit/home_cubit.dart';
 
 class CurrentMarkerWidget extends StatelessWidget {
@@ -30,21 +31,21 @@ class CurrentMarkerPainter extends CustomPainter {
 
     // Dış açık mavi daire
     final outerCirclePaint = Paint()
-      ..color = const Color(0xFF4285F4).withValues(alpha: 0.3)
+      ..color = AppColors.blue.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius, outerCirclePaint);
 
     // Orta mavi daire
     final middleCirclePaint = Paint()
-      ..color = const Color(0xFF4285F4).withValues(alpha: 0.5)
+      ..color = AppColors.blue.withValues(alpha: 0.5)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius * 0.7, middleCirclePaint);
 
     // İç koyu mavi nokta
     final innerCirclePaint = Paint()
-      ..color = const Color(0xFF1A73E8)
+      ..color = AppColors.blue
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius * 0.35, innerCirclePaint);
@@ -63,25 +64,33 @@ class CurrentMarkerPainter extends CustomPainter {
       canvas.rotate(-heading! * 3.14159265359 / 180);
       canvas.translate(-center.dx, -center.dy);
 
-      // Yön göstergesi (cone-shaped gradient)
-      final gradientPaint = Paint()
-        ..shader = RadialGradient(
-          colors: [
-            const Color(0xFF4285F4).withValues(alpha: 0.4),
-            const Color(0xFF4285F4).withValues(alpha: 0.0),
-          ],
-          stops: const [0.0, 1.0],
-        ).createShader(Rect.fromCircle(center: center, radius: radius * 0.9))
+      // Yön göstergesi (daha belirgin ok şekli)
+      final arrowPaint = Paint()
+        ..color = AppColors.blue
         ..style = PaintingStyle.fill;
 
-      // Cone şeklinde path oluştur (yukarı doğru)
+      // Ok şeklinde path oluştur (yukarı doğru)
       final path = Path();
-      path.moveTo(center.dx, center.dy - radius * 0.5);
-      path.lineTo(center.dx - radius * 0.4, center.dy + radius * 0.3);
-      path.lineTo(center.dx + radius * 0.4, center.dy + radius * 0.3);
+      final arrowLength = radius * 0.6;
+      final arrowWidth = radius * 0.35;
+
+      // Ok başı (üst)
+      path.moveTo(center.dx, center.dy - arrowLength);
+      path.lineTo(center.dx - arrowWidth, center.dy - arrowLength * 0.3);
+      path.lineTo(center.dx - arrowWidth * 0.5, center.dy);
+      path.lineTo(center.dx + arrowWidth * 0.5, center.dy);
+      path.lineTo(center.dx + arrowWidth, center.dy - arrowLength * 0.3);
       path.close();
 
-      canvas.drawPath(path, gradientPaint);
+      canvas.drawPath(path, arrowPaint);
+
+      // Ok kenarları (daha net görünüm için)
+      final arrowBorderPaint = Paint()
+        ..color = AppColors.white
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+
+      canvas.drawPath(path, arrowBorderPaint);
 
       // Canvas'ı geri yükle
       canvas.restore();

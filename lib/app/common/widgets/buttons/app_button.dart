@@ -1,117 +1,101 @@
-// import 'package:flutter/material.dart';
-// import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
 
-// final class AppButton extends StatelessWidget {
-//   final String text;
-//   final VoidCallback? onPressed;
-//   final Color backgroundColor;
-//   final Color textColor;
-//   final bool hasBorder;
-//   final Widget? icon;
-//   final bool shrinkWrap;
-//   final double height;
-//   final TextStyle? textStyle;
-//   final double? width;
-//   final double? borderRadius;
+final class AppButton extends StatelessWidget {
+  const AppButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.backgroundColor = AppColors.green,
+    this.textColor = AppColors.white,
+    this.icon,
+    this.height = 56,
+    this.textStyle,
+    this.width,
+    this.borderRadius = 16,
+    this.shrinkWrap = false,
+  });
 
-//   const AppButton({
-//     super.key,
-//     required this.text,
-//     required this.onPressed,
-//     required this.backgroundColor,
-//     required this.textColor,
-//     this.hasBorder = false,
-//     this.icon,
-//     this.shrinkWrap = false,
-//     this.height = 50,
-//     this.textStyle,
-//     this.width,
-//     this.borderRadius,
-//   });
+  final String text;
+  final VoidCallback? onPressed;
+  final Color backgroundColor;
+  final Color textColor;
+  final Widget? icon;
+  final double height;
+  final TextStyle? textStyle;
+  final double? width;
+  final double borderRadius;
+  final bool shrinkWrap;
 
-//   factory AppButton.fill({
-//     Key? key,
-//     required String text,
-//     required VoidCallback? onPressed,
-//     Widget? icon,
-//     bool shrinkWrap = false,
-//     Color? backgroundColor,
-//     Color? textColor,
-//     double height = 50,
-//     TextStyle? textStyle,
-//     double? width,
-//     double? borderRadius,
-//   }) {
-//     return AppButton(
-//       key: key,
-//       text: text,
-//       onPressed: onPressed,
-//       backgroundColor: backgroundColor ?? AppColors.black,
-//       textColor: textColor ?? AppColors.ghostWhite,
-//       hasBorder: false,
-//       icon: icon,
-//       shrinkWrap: shrinkWrap,
-//       height: height,
-//       textStyle: textStyle,
-//       width: width,
-//       borderRadius: borderRadius,
-//     );
-//   }
+  factory AppButton.fill({
+    Key? key,
+    required String text,
+    required VoidCallback? onPressed,
+    Color backgroundColor = AppColors.green,
+    Color textColor = AppColors.white,
+    Widget? icon,
+    double height = 56,
+    TextStyle? textStyle,
+    double? width,
+    double borderRadius = 16,
+    bool shrinkWrap = false,
+  }) {
+    return AppButton(
+      key: key,
+      text: text,
+      onPressed: onPressed,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      icon: icon,
+      height: height,
+      textStyle: textStyle,
+      width: width,
+      borderRadius: borderRadius,
+      shrinkWrap: shrinkWrap,
+    );
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ElevatedButton(
-//       onPressed: onPressed,
-//       style: ElevatedButton.styleFrom(
-//         minimumSize: Size(
-//           shrinkWrap ? width ?? 0 : width ?? double.infinity,
-//           height,
-//         ),
-//         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-//         backgroundColor: backgroundColor,
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(borderRadius ?? 16),
-//         ),
-//         padding: const EdgeInsets.symmetric(horizontal: 14),
-//         overlayColor: textColor,
-//         side: onPressed == null
-//             ? null
-//             : hasBorder
-//             ? BorderSide(color: textColor, width: 1)
-//             : null,
-//         elevation: 0,
-//         shadowColor: Colors.transparent,
-//         disabledBackgroundColor: AppColors.antiFlashWhite2,
-//       ),
-//       child: icon == null
-//           ? Text(
-//               text,
-//               style:
-//                   textStyle ??
-//                   TextStyle(
-//                     color: onPressed == null ? AppColors.grayX11 : textColor,
-//                     fontWeight: FontWeight.w600,
-//                     fontSize: 16,
-//                   ),
-//             )
-//           : Row(
-//               mainAxisSize: MainAxisSize.min,
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Text(
-//                   text,
-//                   style:
-//                       textStyle ??
-//                       TextStyle(
-//                         color: textColor,
-//                         fontWeight: FontWeight.w500,
-//                         fontSize: 16,
-//                       ),
-//                 ),
-//                 const SizedBox(width: 4),
-//                 icon!,
-//               ],
-//             ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: textColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
+        minimumSize: Size(
+          shrinkWrap ? width ?? 0 : width ?? double.infinity,
+          height,
+        ),
+        shadowColor: AppColors.transparent,
+      ),
+      child: icon == null
+          ? Text(
+              text,
+              style:
+                  textStyle ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  text,
+                  style:
+                      textStyle ??
+                      const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(width: 8),
+                icon!,
+              ],
+            ),
+    );
+  }
+}

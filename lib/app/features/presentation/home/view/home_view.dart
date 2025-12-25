@@ -17,51 +17,47 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAndStartTracking();
-    });
-  }
-
-  Future<void> _checkAndStartTracking() async {
-    final cubit = context.read<HomeCubit>();
-    final state = cubit.state;
-
-    // Eğer zaten takip ediliyorsa başlatma
-    if (state.isTracking) {
-      return;
-    }
-
-    // Konum izni kontrolü ve otomatik başlatma
-    await cubit.startService(context);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     context.read<HomeCubit>().mapController.dispose();
     super.dispose();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    final cubit = context.read<HomeCubit>();
+
+    if (state == AppLifecycleState.resumed) {
+      // Uygulama foreground'a geldiğinde state'i senkronize et
+      cubit.onAppResumed();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // Haritayı tüm ekrana yaymak için
       body: Stack(
         children: [
-          MapWidget(),
+          const MapWidget(),
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             height: context.height * 0.1,
-            child: TopGradientWidget(),
+            child: const TopGradientWidget(),
           ),
-          Positioned(top: 12, right: 20, child: SettingsButton()),
-          Positioned(top: 12, left: 20, child: const TrackingToggleButton()),
-          Positioned(
+          const Positioned(top: 12, right: 20, child: SettingsButton()),
+          const Positioned(top: 12, left: 20, child: TrackingToggleButton()),
+          const Positioned(
             bottom: 30,
             left: 20,
             right: 20,

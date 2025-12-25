@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
+import 'package:user_map_trace_app/app/common/constants/app_strings.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/cubit/home_cubit.dart';
 
 class TrackingToggleButton extends StatelessWidget {
@@ -17,7 +19,7 @@ class TrackingToggleButton extends StatelessWidget {
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: GestureDetector(
@@ -32,22 +34,20 @@ class TrackingToggleButton extends StatelessWidget {
                       state.isTracking
                           ? Icons.location_on_rounded
                           : Icons.location_off_rounded,
-                      color: state.isTracking
-                          ? Colors.red
-                          : const Color(0xFF34D100),
+                      color: state.isTracking ? AppColors.red : AppColors.green,
                       size: 20,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       state.isTracking
-                          ? 'Konum Takibi Durdur'
-                          : 'Konum Takibi Başlat',
+                          ? AppStrings.stopTracking
+                          : AppStrings.startTracking,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: state.isTracking
-                            ? Colors.red
-                            : const Color(0xFF34D100),
+                            ? AppColors.red
+                            : AppColors.green,
                       ),
                     ),
                   ],

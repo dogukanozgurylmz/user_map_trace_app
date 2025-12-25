@@ -20,4 +20,15 @@ final class AppStrings {
   static const String saveAndReset = "Kaydet ve Sıfırla";
   static const String routeSaved = "Yolculuk kaydedildi";
   static const String routeReset = "Yolculuk sıfırlandı";
+  static const String stopJourney = "Yolculuğu Durdur";
+  static const String stopJourneyMessage =
+      "Yolculuğu durdurmak istiyor musunuz?";
+  static const String close = "Kapat";
+  static const String startJourneyMessage = "İlerlemeye devam et";
+  static const String startJourney = "Yolculuğa Başla";
+  static const String great = "Harika, ";
+  static const String youHaveTraveled = "ilerledin";
+  static const String startNewJourney = "Yeni Yolculuk Başlat";
+  static const String stopTracking = "Konum Takibi Durdur";
+  static const String startTracking = "Konum Takibi Başlat";
 }

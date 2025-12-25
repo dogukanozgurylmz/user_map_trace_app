@@ -1,12 +1,17 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
+import 'package:user_map_trace_app/app/common/widgets/buttons/app_button.dart';
 import 'package:user_map_trace_app/app/features/data/models/location_model.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/cubit/home_cubit.dart';
+import 'package:user_map_trace_app/app/features/presentation/home/mixin/date_time_format_mixin.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/widgets/location_detail_header_widget.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/widgets/location_detail_row_widget.dart';
 
-class LocationDetailBottomSheet extends StatelessWidget {
+class LocationDetailBottomSheet extends StatelessWidget
+    with DateTimeFormatMixin {
   final LocationModel location;
 
   const LocationDetailBottomSheet({super.key, required this.location});
@@ -15,7 +20,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (context) => LocationDetailBottomSheet(location: location),
     );
   }
@@ -37,7 +42,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
           builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(
@@ -48,7 +53,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
+                      color: AppColors.grey.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -57,22 +62,20 @@ class LocationDetailBottomSheet extends StatelessWidget {
                       controller: scrollController,
                       padding: const EdgeInsets.all(20),
                       children: [
-                        LocationDetailHeaderWidget(
-                          onClose: () => Navigator.of(context).pop(),
-                        ),
+                        const LocationDetailHeaderWidget(),
                         const SizedBox(height: 20),
                         LocationDetailRowWidget(
                           icon: Icons.location_on_rounded,
                           label: 'Adres',
                           value: address,
-                          iconColor: Colors.blue,
+                          iconColor: AppColors.blue,
                         ),
                         const SizedBox(height: 16),
                         LocationDetailRowWidget(
                           icon: Icons.access_time_rounded,
                           label: 'Zaman',
-                          value: _formatDateTime(location.timestamp),
-                          iconColor: Colors.blue,
+                          value: formatDateTime(location.timestamp),
+                          iconColor: AppColors.blue,
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -83,7 +86,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
                                 label: 'Enlem',
                                 value:
                                     '${location.latitude.toStringAsFixed(6)}°',
-                                iconColor: Colors.green,
+                                iconColor: AppColors.green,
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -93,7 +96,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
                                 label: 'Boylam',
                                 value:
                                     '${location.longitude.toStringAsFixed(6)}°',
-                                iconColor: Colors.orange,
+                                iconColor: AppColors.orange,
                               ),
                             ),
                           ],
@@ -110,7 +113,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
                                     label: 'Hız',
                                     value:
                                         '${(location.speed! * 3.6).toStringAsFixed(1)} km/h',
-                                    iconColor: Colors.red,
+                                    iconColor: AppColors.red,
                                   ),
                                 ),
                               if (location.speed != null &&
@@ -123,7 +126,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
                                     label: 'Doğruluk',
                                     value:
                                         '${location.accuracy!.toStringAsFixed(1)} m',
-                                    iconColor: Colors.purple,
+                                    iconColor: AppColors.purple,
                                   ),
                                 ),
                             ],
@@ -135,7 +138,7 @@ class LocationDetailBottomSheet extends StatelessWidget {
                             icon: Icons.height_rounded,
                             label: 'Yükseklik',
                             value: '${location.altitude!.toStringAsFixed(1)} m',
-                            iconColor: Colors.teal,
+                            iconColor: AppColors.teal,
                           ),
                         ],
                         if (location.heading != null) ...[
@@ -144,30 +147,19 @@ class LocationDetailBottomSheet extends StatelessWidget {
                             icon: Icons.explore_rounded,
                             label: 'Yön',
                             value: '${location.heading!.toStringAsFixed(1)}°',
-                            iconColor: Colors.indigo,
+                            iconColor: AppColors.indigo,
                           ),
                         ],
                         const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              cubit.moveToLocation(
-                                LatLng(location.latitude, location.longitude),
-                              );
-                              Navigator.of(context).pop();
-                            },
-                            icon: const Icon(Icons.map_rounded),
-                            label: const Text('Haritada Göster'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4F46E5),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
+                        AppButton.fill(
+                          onPressed: () {
+                            cubit.moveToLocation(
+                              LatLng(location.latitude, location.longitude),
+                            );
+                            context.router.pop();
+                          },
+                          icon: const Icon(Icons.map_rounded),
+                          text: 'Haritada Göster',
                         ),
                       ],
                     ),
@@ -179,20 +171,5 @@ class LocationDetailBottomSheet extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays} gün önce';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} saat önce';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} dakika önce';
-    } else {
-      return 'Az önce';
-    }
   }
 }

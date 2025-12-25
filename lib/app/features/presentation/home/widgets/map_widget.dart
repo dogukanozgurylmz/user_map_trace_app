@@ -16,7 +16,7 @@ class MapWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        var cubit = context.read<HomeCubit>();
+        final cubit = context.read<HomeCubit>();
         final points = state.routeHistory;
         final routePolyline = state.routePolyline.isNotEmpty
             ? state.routePolyline
@@ -33,9 +33,10 @@ class MapWidget extends StatelessWidget {
             initialZoom: 15,
             minZoom: 5,
             maxZoom: 18,
-            // Etkileşim sırasında haritanın dönmesini engelleyebilirsin (isteğe bağlı)
             interactionOptions: const InteractionOptions(
-              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              flags: InteractiveFlag.all,
+              doubleTapZoomCurve: Curves.easeInOut,
+              doubleTapZoomDuration: Duration(milliseconds: 300),
             ),
             onTap: (tapPosition, point) {
               // Marker'lara tıklama kontrolü
@@ -58,7 +59,7 @@ class MapWidget extends StatelessWidget {
             TileLayer(
               urlTemplate:
                   'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-              subdomains: ['a', 'b', 'c'],
+              subdomains: const ['a', 'b', 'c'],
               userAgentPackageName: 'com.example.user_map_trace_app',
             ),
 
@@ -75,9 +76,8 @@ class MapWidget extends StatelessWidget {
                   ),
                 ],
               ),
-
-            // Markerlar (Özelleştirilmiş)
             MarkerLayer(
+              alignment: Alignment.topCenter,
               markers: [
                 // Başlangıç Noktası (İlk marker)
                 if (points.isNotEmpty)
@@ -85,7 +85,8 @@ class MapWidget extends StatelessWidget {
                     point: points.first,
                     width: 40,
                     height: 40,
-                    child: StartMarkerWidget(),
+                    child: const StartMarkerWidget(),
+                    rotate: true,
                   ),
                 // Her 100m Marker'ları (İkinci marker'dan itibaren)
                 ...state.locationHistory
@@ -96,6 +97,7 @@ class MapWidget extends StatelessWidget {
                         width: 35,
                         height: 35,
                         child: MarkerWidget(location: location),
+                        rotate: true,
                       ),
                     ),
                 // Anlık Konum Marker'ı (Her zaman göster)
@@ -104,7 +106,8 @@ class MapWidget extends StatelessWidget {
                     point: state.currentLocation!,
                     width: 35,
                     height: 35,
-                    child: CurrentMarkerWidget(),
+                    alignment: Alignment.center,
+                    child: const CurrentMarkerWidget(),
                   ),
               ],
             ),

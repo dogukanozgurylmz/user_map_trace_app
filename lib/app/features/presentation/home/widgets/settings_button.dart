@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
 
 class SettingsButton extends StatelessWidget {
   const SettingsButton({super.key});
@@ -11,8 +12,8 @@ class SettingsButton extends StatelessWidget {
         child: IconButton(
           onPressed: () {},
           style: IconButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black87,
+            backgroundColor: AppColors.white,
+            foregroundColor: AppColors.black2,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
