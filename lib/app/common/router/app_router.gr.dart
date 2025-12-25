@@ -28,49 +28,18 @@ class HomeRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [RouteDetailView]
-class RouteDetailRoute extends PageRouteInfo<RouteDetailRouteArgs> {
-  RouteDetailRoute({
-    Key? key,
-    required RouteModel route,
-    List<PageRouteInfo>? children,
-  }) : super(
-         RouteDetailRoute.name,
-         args: RouteDetailRouteArgs(key: key, route: route),
-         initialChildren: children,
-       );
+class RouteDetailRoute extends PageRouteInfo<void> {
+  const RouteDetailRoute({List<PageRouteInfo>? children})
+    : super(RouteDetailRoute.name, initialChildren: children);
 
   static const String name = 'RouteDetailRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<RouteDetailRouteArgs>();
-      return RouteDetailView(key: args.key, route: args.route);
+      return const RouteDetailView();
     },
   );
-}
-
-class RouteDetailRouteArgs {
-  const RouteDetailRouteArgs({this.key, required this.route});
-
-  final Key? key;
-
-  final RouteModel route;
-
-  @override
-  String toString() {
-    return 'RouteDetailRouteArgs{key: $key, route: $route}';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! RouteDetailRouteArgs) return false;
-    return key == other.key && route == other.route;
-  }
-
-  @override
-  int get hashCode => key.hashCode ^ route.hashCode;
 }
 
 /// generated route for

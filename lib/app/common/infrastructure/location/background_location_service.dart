@@ -8,7 +8,7 @@ import 'package:geolocator/geolocator.dart';
 LocationSettings get _createLocationSettings {
   return Platform.isIOS
       ? AppleSettings(
-          accuracy: LocationAccuracy.high,
+          accuracy: LocationAccuracy.bestForNavigation,
           activityType: ActivityType.fitness,
           distanceFilter: 10,
           allowBackgroundLocationUpdates: true,
@@ -16,7 +16,7 @@ LocationSettings get _createLocationSettings {
           showBackgroundLocationIndicator: true,
         )
       : const LocationSettings(
-          accuracy: LocationAccuracy.high,
+          accuracy: LocationAccuracy.bestForNavigation,
           distanceFilter: 0,
           timeLimit: null,
         );

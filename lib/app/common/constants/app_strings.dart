@@ -1,5 +1,5 @@
 final class AppStrings {
-  static const String noData = "No Data";
+  static const String noData = "Veri bulunamadı";
   static const String locationPermissionDenied = "Konum izni reddedildi";
   static const String locationPermissionDeniedForever =
       "Konum izni kalıcı olarak reddedildi. Lütfen ayarlardan izin verin";

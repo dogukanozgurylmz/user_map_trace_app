@@ -1,6 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:user_map_trace_app/app/features/data/models/route_model.dart';
-import 'package:flutter/material.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/view/home_view.dart';
 import 'package:user_map_trace_app/app/features/presentation/settings/view/route_detail_view.dart';
 import 'package:user_map_trace_app/app/features/presentation/settings/view/saved_routes_view.dart';

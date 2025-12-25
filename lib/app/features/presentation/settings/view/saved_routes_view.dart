@@ -90,7 +90,10 @@ class _RouteItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.router.push(RouteDetailRoute(route: route)),
+      onTap: () {
+        context.read<SettingsCubit>().selectRoute(route);
+        context.router.push(const RouteDetailRoute());
+      },
       borderRadius: BorderRadius.circular(12),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),

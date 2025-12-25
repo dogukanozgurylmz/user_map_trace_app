@@ -6,6 +6,7 @@ import 'package:user_map_trace_app/app/common/functions/app_functions.dart';
 import 'package:user_map_trace_app/app/common/get_it/get_it.dart';
 import 'package:user_map_trace_app/app/common/router/app_router.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/cubit/home_cubit.dart';
+import 'package:user_map_trace_app/app/features/presentation/settings/cubit/settings_cubit.dart';
 
 void main() async {
   await AppFunctions.instance.init();
@@ -20,7 +21,10 @@ class MyApp extends StatelessWidget {
     final appRouter = getIt.get<AppRouter>();
 
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => getIt.get<HomeCubit>())],
+      providers: [
+        BlocProvider(create: (context) => getIt.get<HomeCubit>()),
+        BlocProvider(create: (context) => getIt.get<SettingsCubit>()),
+      ],
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: MaterialApp.router(
