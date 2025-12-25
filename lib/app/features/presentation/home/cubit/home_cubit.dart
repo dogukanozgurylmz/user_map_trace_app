@@ -278,7 +278,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _init() async {
     await getCurrentLocation();
-    await _loadHistory();
+    await loadHistory();
     await _syncServiceState();
 
     _locationSubscription = BackgroundLocationService.instance.locationStream
@@ -297,11 +297,11 @@ class HomeCubit extends Cubit<HomeState> {
     await _syncServiceState();
 
     if (state.isTracking) {
-      await _loadHistory();
+      await loadHistory();
     }
   }
 
-  Future<void> _loadHistory() async {
+  Future<void> loadHistory() async {
     final data = await _locationRepository.getAllLocations();
     if (!data.success) {
       AppLogger.instance.error(data.message ?? 'Failed to load history');

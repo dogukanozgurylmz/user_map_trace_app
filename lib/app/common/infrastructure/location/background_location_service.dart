@@ -71,17 +71,29 @@ void _setupAndroidService(ServiceInstance service) {
   }
 }
 
-bool _shouldSavePosition(Position? lastPosition, Position currentPosition) {
-  if (lastPosition == null) {
+bool _shouldSavePosition(
+  Position? lastSavedPosition,
+  Position? lastCheckedPosition,
+  double cumulativeDistance,
+  Position currentPosition,
+) {
+  if (lastSavedPosition == null) {
     return true;
   }
-  final distance = Geolocator.distanceBetween(
-    lastPosition.latitude,
-    lastPosition.longitude,
-    currentPosition.latitude,
-    currentPosition.longitude,
-  );
-  return distance >= 100;
+
+  double newCumulativeDistance = cumulativeDistance;
+
+  if (lastCheckedPosition != null) {
+    final segmentDistance = Geolocator.distanceBetween(
+      lastCheckedPosition.latitude,
+      lastCheckedPosition.longitude,
+      currentPosition.latitude,
+      currentPosition.longitude,
+    );
+    newCumulativeDistance += segmentDistance;
+  }
+
+  return newCumulativeDistance >= 100;
 }
 
 Map<String, dynamic> _createPositionData(Position position) {
@@ -99,8 +111,12 @@ Map<String, dynamic> _createPositionData(Position position) {
 void Function(Position) _createPositionHandler(
   ServiceInstance service,
   bool Function() isStopped,
-  Position? Function() getLastPosition,
-  void Function(Position) setLastPosition,
+  Position? Function() getLastSavedPosition,
+  Position? Function() getLastCheckedPosition,
+  double Function() getCumulativeDistance,
+  void Function(Position) setLastSavedPosition,
+  void Function(Position) setLastCheckedPosition,
+  void Function(double) setCumulativeDistance,
 ) {
   return (Position position) {
     if (isStopped()) {
@@ -114,10 +130,28 @@ void Function(Position) _createPositionHandler(
       );
     }
 
-    if (_shouldSavePosition(getLastPosition(), position)) {
-      setLastPosition(position);
+    final lastSaved = getLastSavedPosition();
+    final lastChecked = getLastCheckedPosition();
+    final cumulativeDist = getCumulativeDistance();
+
+    if (_shouldSavePosition(lastSaved, lastChecked, cumulativeDist, position)) {
+      setLastSavedPosition(position);
+      setCumulativeDistance(0.0);
+    } else {
+      double newCumulativeDistance = cumulativeDist;
+      if (lastChecked != null) {
+        final segmentDistance = Geolocator.distanceBetween(
+          lastChecked.latitude,
+          lastChecked.longitude,
+          position.latitude,
+          position.longitude,
+        );
+        newCumulativeDistance += segmentDistance;
+      }
+      setCumulativeDistance(newCumulativeDistance);
     }
 
+    setLastCheckedPosition(position);
     service.invoke('update', _createPositionData(position));
   };
 }
@@ -144,15 +178,23 @@ StreamSubscription<Position> _startLocationStream(
   ServiceInstance service,
   LocationSettings settings,
   bool Function() isStopped,
-  Position? Function() getLastPosition,
-  void Function(Position) setLastPosition,
+  Position? Function() getLastSavedPosition,
+  Position? Function() getLastCheckedPosition,
+  double Function() getCumulativeDistance,
+  void Function(Position) setLastSavedPosition,
+  void Function(Position) setLastCheckedPosition,
+  void Function(double) setCumulativeDistance,
 ) {
   return Geolocator.getPositionStream(locationSettings: settings).listen(
     _createPositionHandler(
       service,
       isStopped,
-      getLastPosition,
-      setLastPosition,
+      getLastSavedPosition,
+      getLastCheckedPosition,
+      getCumulativeDistance,
+      setLastSavedPosition,
+      setLastCheckedPosition,
+      setCumulativeDistance,
     ),
     onError: _createErrorHandler(service, isStopped),
     cancelOnError: false,
@@ -166,7 +208,9 @@ void onStart(ServiceInstance service) async {
   final locationSettings = _createLocationSettings;
   StreamSubscription<Position>? locationSubscription;
   bool isStopped = false;
-  Position? lastPosition;
+  Position? lastSavedPosition;
+  Position? lastCheckedPosition;
+  double cumulativeDistance = 0.0;
 
   _setupAndroidService(service);
 
@@ -185,7 +229,9 @@ void onStart(ServiceInstance service) async {
     await locationSubscription?.cancel();
     locationSubscription = null;
     isStopped = false;
-    lastPosition = null;
+    lastSavedPosition = null;
+    lastCheckedPosition = null;
+    cumulativeDistance = 0.0;
 
     final hasPermission = await _checkLocationPermissions(service);
     if (!hasPermission) {
@@ -200,8 +246,12 @@ void onStart(ServiceInstance service) async {
       service,
       _createLocationSettings,
       () => isStopped,
-      () => lastPosition,
-      (position) => lastPosition = position,
+      () => lastSavedPosition,
+      () => lastCheckedPosition,
+      () => cumulativeDistance,
+      (position) => lastSavedPosition = position,
+      (position) => lastCheckedPosition = position,
+      (distance) => cumulativeDistance = distance,
     );
   });
 
@@ -218,8 +268,12 @@ void onStart(ServiceInstance service) async {
     service,
     locationSettings,
     () => isStopped,
-    () => lastPosition,
-    (position) => lastPosition = position,
+    () => lastSavedPosition,
+    () => lastCheckedPosition,
+    () => cumulativeDistance,
+    (position) => lastSavedPosition = position,
+    (position) => lastCheckedPosition = position,
+    (distance) => cumulativeDistance = distance,
   );
 }
 

@@ -97,6 +97,7 @@ class MapWidget extends StatelessWidget {
                         width: 35,
                         height: 35,
                         child: MarkerWidget(location: location),
+                        alignment: Alignment.topRight,
                         rotate: true,
                       ),
                     ),
