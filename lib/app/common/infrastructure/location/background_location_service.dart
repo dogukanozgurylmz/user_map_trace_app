@@ -56,12 +56,6 @@ Future<bool> _checkLocationPermissions(ServiceInstance service) async {
 
 void _setupAndroidService(ServiceInstance service) {
   if (service is AndroidServiceInstance) {
-    service.setAsForegroundService();
-    service.setForegroundNotificationInfo(
-      title: "Martı Takip Aktif",
-      content: "Konum takibi başlatılıyor...",
-    );
-
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
     });
@@ -240,6 +234,10 @@ void onStart(ServiceInstance service) async {
 
     if (service is AndroidServiceInstance) {
       service.setAsForegroundService();
+      service.setForegroundNotificationInfo(
+        title: "Martı Takip Aktif",
+        content: "Konum takibi başlatılıyor...",
+      );
     }
 
     locationSubscription = _startLocationStream(
@@ -262,6 +260,10 @@ void onStart(ServiceInstance service) async {
 
   if (service is AndroidServiceInstance) {
     service.setAsForegroundService();
+    service.setForegroundNotificationInfo(
+      title: "Martı Takip Aktif",
+      content: "Konum takibi başlatılıyor...",
+    );
   }
 
   locationSubscription = _startLocationStream(
