@@ -34,11 +34,11 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    final cubit = context.read<HomeCubit>();
+    //final cubit = context.read<HomeCubit>();
 
     if (state == AppLifecycleState.resumed) {
       // Uygulama foreground'a geldiğinde state'i senkronize et
-      cubit.onAppResumed();
+      //cubit.onAppResumed();
     }
   }
 

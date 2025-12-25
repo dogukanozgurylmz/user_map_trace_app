@@ -364,10 +364,10 @@ class HomeCubit extends Cubit<HomeState> {
     )..add(locationModel);
 
     final updatedPolyline = List<LatLng>.from(latestState.routePolyline);
-    if (updatedList.length >= 2) {
+    if (updatedList.length >= 2 && updatedLocationHistory.length >= 2) {
       final lastPoint = updatedList[updatedList.length - 2];
       final lastLocation =
-          latestState.locationHistory[latestState.locationHistory.length - 2];
+          updatedLocationHistory[updatedLocationHistory.length - 2];
       _updatePolylineWithRoute(
         updatedPolyline,
         lastPoint,

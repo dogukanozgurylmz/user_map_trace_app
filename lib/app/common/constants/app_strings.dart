@@ -31,4 +31,10 @@ final class AppStrings {
   static const String startNewJourney = "Yeni Yolculuk Başlat";
   static const String stopTracking = "Konum Takibi Durdur";
   static const String startTracking = "Konum Takibi Başlat";
+  static const String settings = "Ayarlar";
+  static const String savedRoutes = "Kaydedilen Rotalar";
+  static const String termsOfUse = "Kullanım Koşulları";
+  static const String privacyPolicy = "Gizlilik Politikası";
+  static const String rateApp = "Uygulamayı Değerlendir";
+  static const String noSavedRoutes = "Kaydedilmiş rota bulunmuyor";
 }

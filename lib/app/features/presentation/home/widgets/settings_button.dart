@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:user_map_trace_app/app/common/constants/app_colors.dart';
+import 'package:user_map_trace_app/app/common/router/app_router.dart';
 
 class SettingsButton extends StatelessWidget {
   const SettingsButton({super.key});
@@ -10,7 +12,7 @@ class SettingsButton extends StatelessWidget {
       child: Align(
         alignment: Alignment.bottomRight,
         child: IconButton(
-          onPressed: () {},
+          onPressed: () => context.router.push(const SettingsRoute()),
           style: IconButton.styleFrom(
             backgroundColor: AppColors.white,
             foregroundColor: AppColors.black2,

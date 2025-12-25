@@ -10,6 +10,7 @@ import 'package:user_map_trace_app/app/features/data/datasources/local/route_loc
 import 'package:user_map_trace_app/app/features/data/repositories/location_repository.dart';
 import 'package:user_map_trace_app/app/features/data/repositories/route_repository.dart';
 import 'package:user_map_trace_app/app/features/presentation/home/cubit/home_cubit.dart';
+import 'package:user_map_trace_app/app/features/presentation/settings/cubit/settings_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -61,14 +62,18 @@ final class ServiceLocator {
 
   /// **BLoC, Cubit and ViewModel Dependency**
   void _setupCubit() {
-    getIt.registerLazySingleton<HomeCubit>(
-      () => HomeCubit(
-        locationRepository: getIt(),
-        routeRepository: getIt(),
-        locationService: getIt(),
-        permissionsService: getIt(),
-      ),
-    );
+    getIt
+      ..registerLazySingleton<HomeCubit>(
+        () => HomeCubit(
+          locationRepository: getIt(),
+          routeRepository: getIt(),
+          locationService: getIt(),
+          permissionsService: getIt(),
+        ),
+      )
+      ..registerFactory<SettingsCubit>(
+        () => SettingsCubit(routeRepository: getIt()),
+      );
   }
 
   /// **Resets dependencies for Test and Debug**

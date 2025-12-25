@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:user_map_trace_app/app/common/config/config.dart';
 import 'package:user_map_trace_app/app/common/get_it/get_it.dart';
 import 'package:user_map_trace_app/app/common/helpers/hive/hive_helper.dart';
@@ -17,6 +18,8 @@ final class AppFunctions {
     Config.currentEnvironment = Environment.development;
 
     await HiveHelper.instance.init();
+
+    await initializeDateFormatting('tr_TR', null);
 
     ServiceLocator().setup();
 
